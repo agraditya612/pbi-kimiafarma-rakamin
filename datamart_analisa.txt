@@ -1,0 +1,39 @@
+CREATE TABLE rakamin-kf-analytics-430814.kimia_farma.tabel_analisa AS
+SELECT
+  kft.transaction_id,
+  kft.date,
+  kkc.branch_id,
+  kkc.branch_name,
+  kkc.kota,
+  kkc.provinsi,
+  kkc.rating AS rating_cabang,
+  kft.customer_name,
+  kpd.product_id,
+  kpd.product_name,
+  kpd.price AS actual_price,
+  round(kft.discount_percentage*100) AS discount_percentage,
+  CASE
+    WHEN kpd.price <= 50000 THEN '10%'
+    WHEN kpd.price BETWEEN 50000 AND 100000 THEN '15%'
+    WHEN kpd.price BETWEEN 100000 AND 300000 THEN '20%'
+    WHEN kpd.price BETWEEN 300000 AND 500000 THEN '25%'
+    WHEN kpd.price >500000 THEN '30%'
+  END AS persentase_gross_laba,
+  round(kpd.price - (kpd.price * discount_percentage)) AS nett_sales,
+  round(kpd.price - (kpd.price - (kpd.price*discount_percentage))) AS nett_profit,
+  kft.rating AS rating
+FROM
+  rakamin-kf-analytics-430814.kimia_farma.kf_final_transaction kft
+LEFT JOIN
+  rakamin-kf-analytics-430814.kimia_farma.kf_kantor_cabang kkc
+ON
+  kft.branch_id = kkc.branch_id
+LEFT JOIN
+  rakamin-kf-analytics-430814.kimia_farma.kf_product kpd
+ON
+  kft.product_id = kpd.product_id;
+
+
+https://console.cloud.google.com/bigquery?sq=500419626725:6f5759068e374e17a778220b81bb4d69
+
+
